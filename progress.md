@@ -15,6 +15,7 @@
 🌐 Port → 5432
 
    Step 0:  start Docker Desktop installation
+            docker network create estreya-net
 
 🧱 Step 1 — Run Postgres container
 docker run -d --name local_pg \
@@ -84,4 +85,5 @@ npm run dev
 
 # create docker file 
 docker build --build-arg NEXT_PUBLIC_API_URL=http://local_backend:8083 -t estreya-frontend .
+
 docker run -d --name local_frontend --network estreya-net -p 8088:8088 estreya-frontend
