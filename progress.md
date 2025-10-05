@@ -94,3 +94,15 @@ docker network connect estreya-net local_pg
 docker network connect estreya-net local_backend
 docker network connect estreya-net local_frontend
 
+
+🧠 Now what happens
+
+After this:
+
+local_backend can connect to DB using
+jdbc:postgresql://local_pg:5432/sanisidro
+
+local_frontend can call backend via
+http://local_backend:8083
+
+Everything is now networked together internally 🚀
