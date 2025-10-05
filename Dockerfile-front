@@ -1,0 +1,83 @@
+# ---------- Stage 1: Build ----------
+FROM node:20-alpine AS build
+WORKDIR /app
+
+# Copy dependency files and install packages
+COPY package*.json ./
+
+# Disable SSL verification to avoid npm registry SSL issues
+RUN npm config set strict-ssl false
+
+RUN npm ci --legacy-peer-deps --no-audit --prefer-offline
+
+# Copy the rest of the source code
+COPY . .
+
+# Build-time argument for backend API URL
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+
+# Build the optimized Next.js app
+RUN npm run build
+
+# ---------- Stage 2: Runtime ----------
+FROM node:20-alpine AS runtime
+WORKDIR /app
+
+# Copy only what's needed to run
+COPY --from=build /app/package*.json ./
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/.next ./.next
+COPY --from=build /app/public ./public
+
+# Set environment and expose port
+ENV NODE_ENV=production
+ENV PORT=8088
+EXPOSE 8088
+
+# Start the app
+CMD ["npm", "run", "start"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# FROM node:20-alpine AS build
+
+# WORKDIR /app
+
+# COPY package.json package-lock.json ./
+# RUN npm ci
+
+# COPY . .
+
+# ARG NEXT_PUBLIC_API_URL
+# ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+# RUN npm run build
+
+
+
+# FROM node:20-alpine AS runner
+
+# WORKDIR /app
+
+# COPY --from=build /app/package.json ./
+# COPY --from=build /app/node_modules ./node_modules
+# COPY --from=build /app/.next ./.next
+# COPY --from=build /app/public ./public
+
+# EXPOSE 3000
+# ENV PORT 3000
+# ENV NODE_ENV=production
+
+# CMD ["npm","run","start"]
+
