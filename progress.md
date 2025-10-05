@@ -87,3 +87,10 @@ npm run dev
 docker build --build-arg NEXT_PUBLIC_API_URL=http://local_backend:8083 -t estreya-frontend .
 
 docker run -d --name local_frontend --network estreya-net -p 8088:8088 estreya-frontend
+
+
+
+docker network connect estreya-net local_pg
+docker network connect estreya-net local_backend
+docker network connect estreya-net local_frontend
+
